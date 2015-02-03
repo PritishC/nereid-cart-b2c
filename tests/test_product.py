@@ -601,13 +601,22 @@ class TestProduct(BaseTestCase):
                 'product': product,
                 'image': file2
             }])
+            qty = 7
 
-            with app.test_request_context('/'):
-                res = product.serialize(purpose='cart')
+            # Without login
+            with app.test_client() as c:
+                c.post(
+                    '/cart/add',
+                    data={
+                        'product': product.id,
+                        'quantity': qty,
+                    }
+                )
+                rv = c.get('/user_status')
+                data = json.loads(rv.data)
 
-                self.assertGreater(len(res), 0)
-                self.assertEqual(res['id'], product.id)
-                self.assertFalse(res['image'] is None)
+                print data
+
 
 
 def suite():
